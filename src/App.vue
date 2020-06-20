@@ -25,11 +25,59 @@
         />
       </div>
 
+
+      <v-btn
+        to="/"
+        text
+      >
+        <span class="mr-1">Home</span>
+      </v-btn>
+
+      <template v-if="user.loggedIn">
+        <div class="nav-item">{{user.data.displayName}}</div>
+        
+        <v-btn
+          @click.prevent="signOut"
+          text
+        >
+          <span class="mr-1">Sign Out</span>
+        </v-btn>
+
+        <v-btn
+          to="/profile"
+          text
+        >
+          <span class="mr-1">Profile</span>
+        </v-btn>
+
+      </template>
+
+      <template v-else>
+        <v-btn
+          to="/login"
+          text
+        >
+          <span class="mr-1">Login</span>
+        </v-btn>
+        <v-btn
+          to="/register"
+          text
+        >
+          <span class="mr-1">Register</span>
+        </v-btn>
+      </template>
+
+      <v-btn
+        to="/kegiatan"
+        text
+      >
+        <span class="mr-1">Kegiatan</span>
+      </v-btn> 
+
       <v-spacer></v-spacer>
 
       <v-btn
         href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
         text
       >
         <span class="mr-2">Latest Release</span>
@@ -40,21 +88,60 @@
     <v-content>
       <router-view/>
     </v-content>
+
+    <alert />
   </v-app>
 </template>
 
 <script>
 //import HelloWorld from './components/HelloWorld';
+import { mapActions, mapGetters } from "vuex";
+import * as firebase from  'firebase/app'
+import 'firebase/auth'
 
 export default {
   name: 'App',
 
   components: {
-    //HelloWorld,
+    Alert: () => import( /* webpackChunkName: "alert" */ '@/components/Alert.vue'),
   },
 
-  data: () => ({
-    //
-  }),
+  data() {
+    return {
+      loggedIn: false
+    }
+  },
+
+  computed: {
+    ...mapGetters({
+      user: 'autentikasi/user'
+    }),
+
+  },
+
+  methods: {
+    ...mapActions({
+        setAlert  : 'alert/set',
+        fetchUser : "autentikasi/fetchUser"
+    }),
+    async signOut() {
+      try {
+        await firebase.auth().signOut()
+        this.$router.replace({name: 'login'})
+        this.setAlert({
+            status : true,
+            color  : 'success',
+            text  : 'Logged Out',
+        })
+      } catch (error) {
+        this.setAlert({
+          status : true,
+          color  : 'error',
+          text  : error.message,
+        })
+      }
+
+    }
+  }
 };
 </script>

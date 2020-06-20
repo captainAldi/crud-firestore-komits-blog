@@ -147,8 +147,10 @@
 </template>
 
 <script>
-import firebase from "../../firebaseConfig";
-const db = firebase.firestore();
+import * as firebase from "firebase/app";
+import 'firebase/firestore'
+
+//const firebase.firestore() = firebase.firestore();
 
 export default {
   data() {
@@ -226,7 +228,7 @@ export default {
 
         this.dialogLoading = true
         
-        await db.collection("employees")
+        await firebase.firestore().collection("employees")
                   .add({ 
                     date: this.editedItem.date,
                     name: this.editedItem.name
@@ -260,7 +262,7 @@ export default {
       this.employeesData = []
 
       try {
-        const employeesRef = db.collection("employees")
+        const employeesRef = firebase.firestore().collection("employees")
 
         const allEmployees = await employeesRef.get()
 
@@ -292,7 +294,7 @@ export default {
 
         this.dialogLoading = true
         
-        await db.collection("employees")
+        await firebase.firestore().collection("employees")
           .doc(this.editedItem.id)
           .update({
             name: this.editedItem.name,
@@ -332,7 +334,7 @@ export default {
         try {
           this.dialogLoading = true
 
-          await db.collection("employees")
+          await firebase.firestore().collection("employees")
             .doc(item.id)
             .delete()
 
